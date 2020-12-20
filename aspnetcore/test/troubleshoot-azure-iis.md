@@ -6,7 +6,7 @@ monikerRange: '>= aspnetcore-2.1'
 ms.author: riande
 ms.custom: mvc
 ms.date: 02/07/2020
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: test/troubleshoot-azure-iis
 ---
 # Troubleshoot ASP.NET Core on Azure App Service and IIS
@@ -151,7 +151,7 @@ To fix this error, repair the installation of the [.NET Core Hosting Bundle](xre
 
 ### 500.37 ANCM Failed to Start Within Startup Time Limit
 
-ANCM failed to start within the provied startup time limit. By default, the timeout is 120 seconds.
+ANCM failed to start within the provided startup time limit. By default, the timeout is 120 seconds.
 
 This error can occur when starting a large number of apps on the same machine. Check for CPU/Memory usage spikes on the server during startup. You may need to stagger the startup process of multiple apps.
 

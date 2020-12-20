@@ -3,9 +3,9 @@ title: Deploy an app to App Service - DevOps with ASP.NET Core and Azure
 author: CamSoper
 description: Deploy an ASP.NET Core app to Azure App Service, the first step for DevOps with ASP.NET Core and Azure.
 ms.author: casoper
-ms.custom: "devx-track-csharp, mvc, seodec18"
+ms.custom: "devx-track-csharp, mvc, seodec18, devx-track-azurecli"
 ms.date: 10/24/2018
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: azure/devops/deploy-to-app-service
 ---
 # Deploy an app to App Service
@@ -124,7 +124,7 @@ To deploy the app, you'll need to create an App Service [Web App](/azure/app-ser
     git remote add azure-prod GIT_DEPLOYMENT_URL
     ```
 
-    b. Push the local *master* branch to the *azure-prod* remote's *master* branch.
+    b. Push the local default branch (*master*) to the *azure-prod* remote's default branch (*master*).
 
     ```console
     git push azure-prod master
@@ -197,7 +197,7 @@ Deployment slots support the staging of changes without impacting the app runnin
     git remote add azure-staging <Git_staging_deployment_URL>
     ```
 
-    b. Push the local *master* branch to the *azure-staging* remote's *master* branch.
+    b. Push the local default branch (*master*) to the *azure-staging* remote's default branch (*master*).
 
     ```console
     git push azure-staging master

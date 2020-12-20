@@ -4,10 +4,11 @@ author: rick-anderson
 description: Learn how to use the logging framework provided by the Microsoft.Extensions.Logging NuGet package.
 ms.author: riande
 ms.custom: mvc
-ms.date: 6/29/2020
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+ms.date: 11/28/2020
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: fundamentals/logging/index
 ---
+
 # Logging in .NET Core and ASP.NET Core
 
 ::: moniker range=">= aspnetcore-3.0"
@@ -17,6 +18,8 @@ By [Kirk Larkin](https://twitter.com/serpent5), [Juergen Gutsch](https://github.
 .NET Core supports a logging API that works with a variety of built-in and third-party logging providers. This article shows how to use the logging API with built-in providers.
 
 Most of the code examples shown in this article are from ASP.NET Core apps. The logging-specific parts of these code snippets apply to any .NET Core app that uses the [Generic Host](xref:fundamentals/host/generic-host). The ASP.NET Core web app templates use the Generic Host.
+
+This topic provides information on logging in ASP.NET Core. For information on logging in console apps, see [.NET Logging](/dotnet/core/extensions/logging).
 
 [View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/fundamentals/logging/index/samples/3.x) ([how to download](xref:index#how-to-download-a-sample))
 
@@ -64,7 +67,7 @@ The following example:
 
 [Levels](#log-level) and [categories](#log-category) are explained in more detail later in this document.
 
-For information on Blazor, see [Create logs in Blazor and Blazor WebAssembly](#clib) in this document.
+For information on Blazor, see <xref:blazor/fundamentals/logging>.
 
 [Create logs in Main and Startup](#clms) shows how to create logs in `Main` and `Startup`.
 
@@ -202,6 +205,8 @@ To explicitly specify the category, call `ILoggerFactory.CreateLogger`:
 
 [!code-csharp[](index/samples/3.x/TodoApiDTO/Pages/Contact.cshtml.cs?name=snippet)]
 
+Calling `CreateLogger` with a fixed name can be useful when used in multiple methods so the events can be organized by category.
+
 `ILogger<T>` is equivalent to calling `CreateLogger` with the fully qualified type name of `T`.
 
 <a name="llvl"></a>
@@ -312,18 +317,20 @@ Each log API uses a message template. The message template can contain placehold
 
 [!code-csharp[](index/samples/3.x/TodoApiDTO/Controllers/TodoItemsController.cs?name=snippet_CallLogMethods&highlight=4,10)]
 
-The order of placeholders, not their names, determines which parameters are used to provide their values. In the following code, the parameter names are out of sequence in the message template:
+The *order of the parameters*, not their placeholder names, determines which parameters are used to provide placeholder values in log messages. In the following code, the parameter names are out of sequence in the placeholders of the message template:
 
 ```csharp
-string p1 = "param1";
-string p2 = "param2";
-_logger.LogInformation("Parameter values: {p2}, {p1}", p1, p2);
+string apples = 1;
+string pears = 2;
+string bananas = 3;
+
+_logger.LogInformation("Parameters: {pears}, {bananas}, {apples}", apples, pears, bananas);
 ```
 
-The preceding code creates a log message with the parameter values in sequence:
+However, the parameters are assigned to the placeholders in the order: `apples`, `pears`, `bananas`. The log message reflects the *order of the parameters*:
 
 ```text
-Parameter values: param1, param2
+Parameters: 1, 2, 3
 ```
 
 This approach allows logging providers to implement [semantic or structured logging](https://github.com/NLog/NLog/wiki/How-to-use-structured-logging). The arguments themselves are passed to the logging system, not just the formatted message template. This enables logging providers to store the parameter values as fields. For example, consider the following logger method:
@@ -431,14 +438,20 @@ Generally, logging should be specified in configuration and not code.
 
 ## Built-in logging providers
 
-ASP.NET Core includes the following logging providers:
+ASP.NET Core includes the following logging providers as part of the shared framework:
 
 * [Console](#console)
 * [Debug](#debug)
 * [EventSource](#event-source)
 * [EventLog](#welog)
+
+The following logging providers are shipped by Microsoft, but not as part of the 
+shared framework. They must be installed as additional nuget.
+
 * [AzureAppServicesFile and AzureAppServicesBlob](#azure-app-service)
 * [ApplicationInsights](#azure-application-insights)
+
+ASP.NET Core doesn't include a logging provider for writing logs to files. To write logs to files from an ASP.NET Core app, consider using a [third-party logging provider](#third-party-logging-providers).
 
 For information on `stdout` and debug logging with the ASP.NET Core Module, see <xref:test/troubleshoot-azure-iis> and <xref:host-and-deploy/aspnet-core-module#log-creation-and-redirection>.
 
@@ -483,36 +496,40 @@ Use the dotnet trace tooling to collect a trace from an app:
 
    ```dotnetcli
    dotnet trace collect -p {PID} 
-       --providers Microsoft-Extensions-Logging:{Keyword}:{Event Level}
+       --providers Microsoft-Extensions-Logging:{Keyword}:{Provider Level}
            :FilterSpecs=\"
-               {Logger Category 1}:{Event Level 1};
-               {Logger Category 2}:{Event Level 2};
+               {Logger Category 1}:{Category Level 1};
+               {Logger Category 2}:{Category Level 2};
                ...
-               {Logger Category N}:{Event Level N}\"
+               {Logger Category N}:{Category Level N}\"
    ```
 
    When using a PowerShell command shell, enclose the `--providers` value in single quotes (`'`):
 
    ```dotnetcli
    dotnet trace collect -p {PID} 
-       --providers 'Microsoft-Extensions-Logging:{Keyword}:{Event Level}
+       --providers 'Microsoft-Extensions-Logging:{Keyword}:{Provider Level}
            :FilterSpecs=\"
-               {Logger Category 1}:{Event Level 1};
-               {Logger Category 2}:{Event Level 2};
+               {Logger Category 1}:{Category Level 1};
+               {Logger Category 2}:{Category Level 2};
                ...
-               {Logger Category N}:{Event Level N}\"'
+               {Logger Category N}:{Category Level N}\"'
    ```
 
    On non-Windows platforms, add the `-f speedscope` option to change the format of the output trace file to `speedscope`.
 
+   The following table defines the Keyword:
+
    | Keyword | Description |
    | :-----: | ----------- |
-   | 1       | Log meta events about the `LoggingEventSource`. Doesn't log events from `ILogger`). |
+   | 1       | Log meta events about the `LoggingEventSource`. Doesn't log events from `ILogger`. |
    | 2       | Turns on the `Message` event when `ILogger.Log()` is called. Provides information in a programmatic (not formatted) way. |
    | 4       | Turns on the `FormatMessage` event when `ILogger.Log()` is called. Provides the formatted string version of the information. |
    | 8       | Turns on the `MessageJson` event when `ILogger.Log()` is called. Provides a JSON representation of the arguments. |
 
-   | Event Level | Description     |
+   The following table lists the provider levels:
+
+   | Provider Level | Description     |
    | :---------: | --------------- |
    | 0           | `LogAlways`     |
    | 1           | `Critical`      |
@@ -521,12 +538,80 @@ Use the dotnet trace tooling to collect a trace from an app:
    | 4           | `Informational` |
    | 5           | `Verbose`       |
 
-   `FilterSpecs` entries for `{Logger Category}` and `{Event Level}` represent additional log filtering conditions. Separate `FilterSpecs` entries with a semicolon (`;`).
+   The parsing for a category level can be either a string or a number:
 
-   Example using a Windows command shell (**no** single quotes around the `--providers` value):
+   | Category named value  |   Numeric value |
+   | :-----: | ----------- |
+   | `Trace`              |    0 |
+   | `Debug`              |    1 |
+   | `Information`        |    2 |
+   | `Warning`            |    3 |
+   | `Error`              |    4 |
+   | `Critical`           |    5 |
+
+   The provider level and category level:
+
+   * Are in reverse order.
+   * The string constants aren't all identical.
+
+   If no `FilterSpecs` are specified then the `EventSourceLogger` implementation attempts to convert the provider level to a category level and applies it to all categories.
+
+   | Provider Level  |  Category Level      |
+      | :-----: | ----------- |
+   | `Verbose`(5)       |      `Debug`(1)        |
+   | `Informational`(4) |      `Information`(2)  |
+   | `Warning`(3)       |      `Warning`(3)      |
+   | `Error`(2)         |      `Error`(4)        |
+   | `Critical`(1)      |      `Critical`(5)     |
+
+   If `FilterSpecs` are provided, any category that is included in the list uses the category level encoded there, all other categories are filtered out.
+
+   The following examples assume:
+   
+   * An app is running and calling `logger.LogDebug("12345")`.
+   * The process ID (PID) has been set via `set PID=12345`, where `12345` is the actual PID.
+   
+   Consider the following command:
 
    ```dotnetcli
-   dotnet trace collect -p {PID} --providers Microsoft-Extensions-Logging:4:2:FilterSpecs=\"Microsoft.AspNetCore.Hosting*:4\"
+   dotnet trace collect -p %PID% --providers Microsoft-Extensions-Logging:4:5
+   ```
+
+   The preceding command:
+
+   * Captures debug messages.
+   * Doesn't apply a `FilterSpecs`.
+   * Specifies level 5 which maps category Debug.
+
+   Consider the following command:
+
+   ```dotnetcli
+   dotnet trace collect -p %PID%  --providers Microsoft-Extensions-Logging:4:5:\"FilterSpecs=*:5\"
+   ```
+
+   The preceding command:
+
+   * Doesn't capture debug messages because the category level 5 is `Critical`.
+   * Provides a `FilterSpecs`.
+
+   The following command captures debug messages because category level 1 specifies `Debug`.
+
+   ```dotnetcli
+   dotnet trace collect -p %PID%  --providers Microsoft-Extensions-Logging:4:5:\"FilterSpecs=*:1\"
+   ```
+
+   The following command captures debug messages because category specifies `Debug`.
+
+   ```dotnetcli
+   dotnet trace collect -p %PID%  --providers Microsoft-Extensions-Logging:4:5:\"FilterSpecs=*:Debug\"
+   ```
+
+   `FilterSpecs` entries for `{Logger Category}` and `{Category Level}` represent additional log filtering conditions. Separate `FilterSpecs` entries with the `;` semicolon character.
+
+   Example using a Windows command shell:
+
+   ```dotnetcli
+   dotnet trace collect -p %PID% --providers Microsoft-Extensions-Logging:4:2:FilterSpecs=\"Microsoft.AspNetCore.Hosting*:4\"
    ```
 
    The preceding command activates:
@@ -587,7 +672,7 @@ The following code changes the `SourceName` from the default value of `".NET Run
 
 ### Azure App Service
 
-The [Microsoft.Extensions.Logging.AzureAppServices](https://www.nuget.org/packages/Microsoft.Extensions.Logging.AzureAppServices) provider package writes logs to text files in an Azure App Service app's file system and to [blob storage](https://azure.microsoft.com/documentation/articles/storage-dotnet-how-to-use-blobs/#what-is-blob-storage) in an Azure Storage account.
+The [Microsoft.Extensions.Logging.AzureAppServices](https://www.nuget.org/packages/Microsoft.Extensions.Logging.AzureAppServices) provider package writes logs to text files in an Azure App Service app's file system and to [blob storage](/azure/storage/blobs/storage-quickstart-blobs-dotnet#what-is-blob-storage) in an Azure Storage account.
 
 The provider package isn't included in the shared framework. To use the provider, add the provider package to the project.
 
@@ -633,7 +718,7 @@ For more information, see the following resources:
 * [Application Insights overview](/azure/application-insights/app-insights-overview)
 * [Application Insights for ASP.NET Core applications](/azure/azure-monitor/app/asp-net-core) - Start here if you want to implement the full range of Application Insights telemetry along with logging.
 * [ApplicationInsightsLoggerProvider for .NET Core ILogger logs](/azure/azure-monitor/app/ilogger) - Start here if you want to implement the logging provider without the rest of Application Insights telemetry.
-* [Application Insights logging adapters](https://docs.microsoft.com/azure/azure-monitor/app/asp-net-trace-logs).
+* [Application Insights logging adapters](/azure/azure-monitor/app/asp-net-trace-logs).
 * [Install, configure, and initialize the Application Insights SDK](/learn/modules/instrument-web-app-code-with-application-insights) - Interactive tutorial on the Microsoft Learn site.
 
 ## Third-party logging providers
@@ -683,7 +768,7 @@ The following example creates a logger with `LoggingConsoleApp.Program` as the c
 
 [!code-csharp[](index/samples/3.x/LoggingConsoleApp/Program.cs?name=snippet_LoggerFactory&highlight=14)]
 
-In the following ASP.NET CORE examples, the logger is used to create logs with `Information` as the level. The Log *level* indicates the severity of the logged event.
+In the following example, the logger is used to create logs with `Information` as the level. The Log *level* indicates the severity of the logged event.
 
 [!code-csharp[](index/samples/3.x/LoggingConsoleApp/Program.cs?name=snippet_LoggerFactory&highlight=15)]
 
@@ -829,65 +914,7 @@ The following example shows how to register filter rules in code:
 
 ## Create a custom logger
 
-To add a custom logger, add an <xref:Microsoft.Extensions.Logging.ILoggerProvider> with <xref:Microsoft.Extensions.Logging.ILoggerFactory>:
-
-```csharp
-public void Configure(
-    IApplicationBuilder app,
-    IWebHostEnvironment env,
-    ILoggerFactory loggerFactory)
-{
-    loggerFactory.AddProvider(new CustomLoggerProvider(new CustomLoggerConfiguration()));
-```
-
-The `ILoggerProvider` creates one or more `ILogger` instances. The `ILogger` instances are used by the framework to log the information.
-
-### Sample custom logger configuration
-
-The sample:
-
-* Is designed to be a very basic sample that sets the color of the log console by event ID and log level. Loggers generally don't change by event ID and are not specific to log level.
-* Creates different color console entries per log level and event ID using the following configuration type:
-
-[!code-csharp[](index/samples/3.x/CustomLogger/ColorConsoleLogger/ColorConsoleLoggerConfiguration.cs?name=snippet)]
-
-The preceding code sets the default level to `Warning` and the color to `Yellow`. If the `EventId` is set to 0, we will log all events.
-
-### Create the custom logger
-
-The `ILogger` implementation category name is typically the logging source. For example, the type where the logger is created:
-
-[!code-csharp[](index/samples/3.x/CustomLogger/ColorConsoleLogger/ColorConsoleLogger.cs?name=snippet)]
-
-The preceding code:
-
-* Creates a logger instance per category name.
-* Checks `logLevel == _config.LogLevel` in `IsEnabled`, so each `logLevel` has a unique logger. Generally, loggers should also be enabled for all higher log levels:
-
-```csharp
-public bool IsEnabled(LogLevel logLevel)
-{
-    return logLevel >= _config.LogLevel;
-}
-```
-
-### Create the custom LoggerProvider
-
-The `LoggerProvider` is the class that creates the logger instances. Maybe it is not needed to create a logger instance per category, but this makes sense for some Loggers, like NLog or log4net. Doing this you are also able to choose different logging output targets per category if needed:
-
-[!code-csharp[](index/samples/3.x/CustomLogger/ColorConsoleLogger/ColorConsoleLoggerProvider.cs?name=snippet)]
-
-In the preceding code, <xref:Microsoft.Build.Logging.LoggerDescription.CreateLogger*> creates a single instance of the `ColorConsoleLogger` per category name and stores it in the [`ConcurrentDictionary<TKey,TValue>`](/dotnet/api/system.collections.concurrent.concurrentdictionary-2);
-
-### Usage and registration of the custom logger
-
-Register the logger in the `Startup.Configure`:
-
-[!code-csharp[](index/samples/3.x/CustomLogger/Startup.cs?name=snippet)]
-
-For the preceding code, provide at least one extension method for the `ILoggerFactory`:
-
-[!code-csharp[](index/samples/3.x/CustomLogger/ColorConsoleLogger/ColorConsoleLoggerExtensions.cs?name=snippet)]
+To create a custom logger, see [Implement a custom logging provider in .NET](/dotnet/core/extensions/custom-logging-provider).
 
 ## Additional resources
 
@@ -1027,7 +1054,7 @@ Logging provider configuration is provided by one or more configuration provider
 * Command-line arguments.
 * Environment variables.
 * In-memory .NET objects.
-* The unencrypted [Secret Manager](xref:security/app-secrets) storage.
+* The unencrypted [user secrets](xref:security/app-secrets) storage.
 * An encrypted user store, such as [Azure Key Vault](xref:security/key-vault-configuration).
 * Custom providers (installed or created).
 
@@ -1487,7 +1514,7 @@ To use this provider, an app has to run on the .NET Framework (rather than .NET 
 
 ### Azure App Service provider
 
-The [Microsoft.Extensions.Logging.AzureAppServices](https://www.nuget.org/packages/Microsoft.Extensions.Logging.AzureAppServices) provider package writes logs to text files in an Azure App Service app's file system and to [blob storage](https://azure.microsoft.com/documentation/articles/storage-dotnet-how-to-use-blobs/#what-is-blob-storage) in an Azure Storage account.
+The [Microsoft.Extensions.Logging.AzureAppServices](https://www.nuget.org/packages/Microsoft.Extensions.Logging.AzureAppServices) provider package writes logs to text files in an Azure App Service app's file system and to [blob storage](/azure/storage/blobs/storage-quickstart-blobs-dotnet#what-is-blob-storage) in an Azure Storage account.
 
 ```csharp
 logging.AddAzureWebAppDiagnostics();
@@ -1526,6 +1553,7 @@ Navigate to the **Log Stream** page to view app messages. They're logged by the 
 
 The [Microsoft.Extensions.Logging.ApplicationInsights](https://www.nuget.org/packages/Microsoft.Extensions.Logging.ApplicationInsights) provider package writes logs to Azure Application Insights. Application Insights is a service that monitors a web app and provides tools for querying and analyzing the telemetry data. If you use this provider, you can query and analyze your logs by using the Application Insights tools.
 
+The provider package isn't included in the shared framework. To use the provider, add the provider package to the project.
 The logging provider is included as a dependency of [Microsoft.ApplicationInsights.AspNetCore](https://www.nuget.org/packages/Microsoft.ApplicationInsights.AspNetCore), which is the package that provides all available telemetry for ASP.NET Core. If you use this package, you don't have to install the provider package.
 
 Don't use the [Microsoft.ApplicationInsights.Web](https://www.nuget.org/packages/Microsoft.ApplicationInsights.Web) package&mdash;that's for ASP.NET 4.x.
@@ -1535,7 +1563,7 @@ For more information, see the following resources:
 * [Application Insights overview](/azure/application-insights/app-insights-overview)
 * [Application Insights for ASP.NET Core applications](/azure/azure-monitor/app/asp-net-core) - Start here if you want to implement the full range of Application Insights telemetry along with logging.
 * [ApplicationInsightsLoggerProvider for .NET Core ILogger logs](/azure/azure-monitor/app/ilogger) - Start here if you want to implement the logging provider without the rest of Application Insights telemetry.
-* [Application Insights logging adapters](https://docs.microsoft.com/azure/azure-monitor/app/asp-net-trace-logs).
+* [Application Insights logging adapters](/azure/azure-monitor/app/asp-net-trace-logs).
 * [Install, configure, and initialize the Application Insights SDK](/learn/modules/instrument-web-app-code-with-application-insights) - Interactive tutorial on the Microsoft Learn site.
 
 ## Third-party logging providers
@@ -1558,7 +1586,7 @@ Some third-party frameworks can perform [semantic logging, also known as structu
 Using a third-party framework is similar to using one of the built-in providers:
 
 1. Add a NuGet package to your project.
-1. Call an `ILoggerFactory` extension method provided by the logging framework.
+1. Call an `ILoggerFactory` or `ILoggingBuilder` extension method provided by the logging framework.
 
 For more information, see each provider's documentation. Third-party logging providers aren't supported by Microsoft.
 

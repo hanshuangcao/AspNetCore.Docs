@@ -5,8 +5,8 @@ description: Discover how to lazy load assemblies in ASP.NET Core Blazor WebAsse
 monikerRange: '>= aspnetcore-5.0'
 ms.author: riande
 ms.custom: mvc
-ms.date: 07/16/2020
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+ms.date: 09/09/2020
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: blazor/webassembly-lazy-load-assemblies
 ---
 # Lazy load assemblies in ASP.NET Core Blazor WebAssembly
@@ -22,15 +22,13 @@ Blazor's lazy loading feature allows you to mark app assemblies for lazy loading
 
 ## Project file
 
-Mark assemblies for lazy loading in the app's project file (`.csproj`) using the `BlazorWebAssemblyLazyLoad` item. Use the assembly name without the `.dll` extension. The Blazor framework prevents the assemblies specified by this item group from loading at app launch. The following example marks a large custom assembly (`GrantImaharaRobotControls.dll`) for lazy loading. If an assembly that's marked for lazy loading has dependencies, they must also be marked for lazy loading in the project file.
+Mark assemblies for lazy loading in the app's project file (`.csproj`) using the `BlazorWebAssemblyLazyLoad` item. Use the assembly name with the `.dll` extension. The Blazor framework prevents the assemblies specified by this item group from loading at app launch. The following example marks a large custom assembly (`GrantImaharaRobotControls.dll`) for lazy loading. If an assembly that's marked for lazy loading has dependencies, they must also be marked for lazy loading in the project file.
 
 ```xml
 <ItemGroup>
-  <BlazorWebAssemblyLazyLoad Include="GrantImaharaRobotControls" />
+  <BlazorWebAssemblyLazyLoad Include="GrantImaharaRobotControls.dll" />
 </ItemGroup>
 ```
-
-Only assemblies that are used by the app can be lazily loaded. The linker strips unused assemblies from published output.
 
 ## `Router` component
 
@@ -59,6 +57,8 @@ In the app's `Router` component (`App.razor`):
     }
 }
 ```
+
+[!INCLUDE[](~/blazor/includes/prefer-exact-matches.md)]
 
 If the `OnNavigateAsync` callback throws an unhandled exception, the [Blazor error UI](xref:blazor/fundamentals/handle-errors#detailed-errors-during-development) is invoked.
 
@@ -89,8 +89,11 @@ The `LazyAssemblyLoader` provides the `LoadAssembliesAsync` method that:
 * Uses JS interop to fetch assemblies via a network call.
 * Loads assemblies into the runtime executing on WebAssembly in the browser.
 
-> [!NOTE]
-> The framework's lazy loading implementation supports prerendering on the server. During prerendering, all assemblies, including those marked for lazy loading, are assumed to be loaded.
+The framework's lazy loading implementation supports lazy loading with prerendering in a hosted Blazor solution. During prerendering, all assemblies, including those marked for lazy loading, are assumed to be loaded. Manually register `LazyAssemblyLoader` in the *Server* project's `Startup.ConfigureServices` method (`Startup.cs`):
+
+```csharp
+services.AddScoped<LazyAssemblyLoader>();
+```
 
 ### User interaction with `<Navigating>` content
 
@@ -114,6 +117,8 @@ While loading assemblies, which can take several seconds, the `Router` component
 
 ...
 ```
+
+[!INCLUDE[](~/blazor/includes/prefer-exact-matches.md)]
 
 ### Handle cancellations in `OnNavigateAsync`
 
@@ -152,8 +157,19 @@ If a user navigates to Route A and then immediately to Route B, the app shouldn'
 }
 ```
 
+[!INCLUDE[](~/blazor/includes/prefer-exact-matches.md)]
+
 > [!NOTE]
 > Not throwing if the cancellation token in `NavigationContext` is canceled can result in unintended behavior, such as rendering a component from a previous navigation.
+
+### `OnNavigateAsync` events and renamed assembly files
+
+The resource loader relies on the assembly names that are defined in the `blazor.boot.json` file. If [assemblies are renamed](xref:blazor/host-and-deploy/webassembly#change-the-filename-extension-of-dll-files), the assembly names used in `OnNavigateAsync` methods and the assembly names in the `blazor.boot.json` file are out of sync.
+
+To rectify this:
+
+* Check to see if the app is running in the Production environment when determining which assembly names to use.
+* Store the renamed assembly names in a separate file and read from that file to determine what assembly name to use in the `LazyLoadAssemblyService` and `OnNavigateAsync` methods.
 
 ### Complete example
 
@@ -203,6 +219,8 @@ The following complete `Router` component demonstrates loading the `GrantImahara
     }
 }
 ```
+
+[!INCLUDE[](~/blazor/includes/prefer-exact-matches.md)]
 
 ## Troubleshoot
 

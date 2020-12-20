@@ -12,8 +12,10 @@
       href: /dotnet/standard/choosing-core-framework-server?toc=/aspnet/core/toc.json&bc=/aspnet/core/breadcrumb/toc.json
 - name: Get started
   uid: getting-started
-- name: Release notes
-  items:
+- name: What's new
+  items: 
+    - name: What's new in 5.0
+      uid: aspnetcore-5.0
     - name: What's new in 3.1
       uid: aspnetcore-3.1
     - name: What's new in 3.0
@@ -94,6 +96,9 @@
         - name: Backend for mobile
           displayName: tutorial
           uid: mobile/native-mobile-backend
+        - name: Publish to Azure API Management
+          displayName: tutorial
+          uid: tutorials/publish-to-azure-api-management-using-vs
     - name: Real-time web apps
       items:
         - name: SignalR with JavaScript
@@ -162,7 +167,7 @@
           href: /learn/modules/create-razor-pages-aspnet-core/
         - name: Web API apps >>
           displayName: tutorial
-          href: /learn/modules/build-web-api-net-core/
+          href: /learn/modules/build-web-api-aspnet-core/
         - name: Cloud-native microservices
           items:
             - name: Create and deploy >>
@@ -171,6 +176,15 @@
             - name: Implement resiliency >>
               displayName: tutorial, kubernetes, aks, acr, docker
               href: /learn/modules/microservices-resiliency-aspnet-core/
+            - name: Deploy with GitHub Actions >>
+              display: tutorial, kubernetes, aks, acr, docker, devops
+              href: /learn/modules/microservices-devops-aspnet-core/
+            - name: Log and monitor >>
+              display: tutorial, kubernetes, aks, acr, docker, serilog
+              href: /learn/modules/microservices-logging-aspnet-core/
+            - name: Implement feature flags >>
+              display: tutorial, kubernetes, aks, acr, docker
+              href: /learn/modules/microservices-configuration-aspnet-core/
         - name: Data access >>
           displayName: tutorial, ef, entity framework
           href: /learn/modules/persist-data-ef-core/
@@ -300,8 +314,8 @@
               uid: tutorials/build-a-blazor-app
             - name: SignalR with Blazor WebAssembly
               uid: tutorials/signalr-blazor-webassembly
-        - name: Templates
-          uid: blazor/templates
+        - name: Project structure
+          uid: blazor/project-structure
         - name: Fundamentals
           items:
             - name: Routing
@@ -322,40 +336,6 @@
           items:
             - name: Overview
               uid: blazor/components/index
-            - name: Built-in components
-              items:
-                - name: App
-                  href: blazor/templates.md#blazor-project-structure
-                - name: Authentication
-                  href: blazor/security/webassembly/index.md#authentication-component
-                - name: AuthorizeView
-                  href: blazor/security/index.md#authorizeview-component
-                - name: InputCheckbox
-                  href: blazor/forms-validation.md#built-in-forms-components
-                - name: InputDate
-                  href: blazor/forms-validation.md#built-in-forms-components
-                - name: InputNumber
-                  href: blazor/forms-validation.md#built-in-forms-components
-                - name: InputSelect
-                  href: blazor/forms-validation.md#built-in-forms-components
-                - name: InputText
-                  href: blazor/forms-validation.md#built-in-forms-components
-                - name: InputTextArea
-                  href: blazor/forms-validation.md#built-in-forms-components
-                - name: Link
-                  href: blazor/fundamentals/additional-scenarios.md#influence-html-head-tag-elements
-                - name: MainLayout
-                  href: blazor/layouts.md#mainlayout-component
-                - name: Meta
-                  href: blazor/fundamentals/additional-scenarios.md#influence-html-head-tag-elements
-                - name: NavLink
-                  href: blazor/fundamentals/routing.md#navlink-component
-                - name: NavMenu
-                  href: blazor/fundamentals/routing.md#navlink-component
-                - name: Router
-                  href: blazor/fundamentals/routing.md#route-templates
-                - name: Title
-                  href: blazor/fundamentals/additional-scenarios.md#influence-html-head-tag-elements
             - name: Cascading values and parameters
               uid: blazor/components/cascading-values-and-parameters
             - name: Data binding
@@ -364,10 +344,14 @@
               uid: blazor/components/event-handling
             - name: Lifecycle
               uid: blazor/components/lifecycle
+            - name: Component virtualization
+              uid: blazor/components/virtualization
             - name: Templated components
               uid: blazor/components/templated-components
-            - name: Integrate components
-              uid: blazor/components/integrate-components-into-razor-pages-and-mvc-apps
+            - name: CSS isolation
+              uid: blazor/components/css-isolation
+            - name: Prerender and integrate components
+              uid: blazor/components/prerendering-and-integration
             - name: Component libraries
               uid: blazor/components/class-libraries
         - name: Globalization and localization
@@ -376,6 +360,8 @@
           uid: blazor/layouts
         - name: Forms and validation
           uid: blazor/forms-validation
+        - name: File uploads
+          uid: blazor/file-uploads
         - name: Call JavaScript from .NET
           uid: blazor/call-javascript-from-dotnet
         - name: Call .NET from JavaScript
@@ -408,6 +394,8 @@
                   uid: blazor/security/webassembly/additional-scenarios
                 - name: AAD groups and roles
                   uid: blazor/security/webassembly/aad-groups-roles
+                - name: Graph API
+                  uid: blazor/security/webassembly/graph-api
             - name: Blazor Server
               items:
                 - name: Overview
@@ -426,7 +414,7 @@
           uid: blazor/webassembly-lazy-load-assemblies
         - name: WebAssembly performance
           uid: blazor/webassembly-performance-best-practices
-        - name: Test
+        - name: Test components
           uid: blazor/test
         - name: Progressive Web Applications
           uid: blazor/progressive-web-app
@@ -440,10 +428,48 @@
               uid: blazor/host-and-deploy/server
             - name: Configure the Linker
               uid: blazor/host-and-deploy/configure-linker
+            - name: Configure the Trimmer
+              uid: blazor/host-and-deploy/configure-trimmer
         - name: Blazor Server and EF Core
           uid: blazor/blazor-server-ef-core
         - name: Advanced scenarios
           uid: blazor/advanced-scenarios
+        - name: Built-in components
+          items:
+            - name: App
+              uid: blazor/project-structure
+            - name: Authentication
+              href: blazor/security/webassembly/index.md#authentication-component
+            - name: AuthorizeView
+              href: blazor/security/index.md#authorizeview-component
+            - name: InputCheckbox
+              href: blazor/forms-validation.md#built-in-forms-components
+            - name: InputDate
+              href: blazor/forms-validation.md#built-in-forms-components
+            - name: InputFile
+              uid: blazor/file-uploads
+            - name: InputNumber
+              href: blazor/forms-validation.md#built-in-forms-components
+            - name: InputRadio
+              href: blazor/forms-validation.md#built-in-forms-components
+            - name: InputRadioGroup
+              href: blazor/forms-validation.md#built-in-forms-components
+            - name: InputSelect
+              href: blazor/forms-validation.md#built-in-forms-components
+            - name: InputText
+              href: blazor/forms-validation.md#built-in-forms-components
+            - name: InputTextArea
+              href: blazor/forms-validation.md#built-in-forms-components
+            - name: MainLayout
+              href: blazor/layouts.md#mainlayout-component
+            - name: NavLink
+              href: blazor/fundamentals/routing.md#navlink-component
+            - name: NavMenu
+              href: blazor/fundamentals/routing.md#navlink-component
+            - name: Router
+              href: blazor/fundamentals/routing.md#route-templates
+            - name: Virtualize
+              uid: blazor/components/virtualization
     - name: Client-side development
       items:
         - name: Single Page Apps
@@ -581,8 +607,12 @@
       uid: web-api/advanced/conventions
     - name: Handle errors
       uid: web-api/handle-errors
-    - name: Test APIs with HTTP REPL
-      uid: web-api/http-repl
+    - name: Test with HttpRepl
+      items:
+      - name: Overview
+        uid: web-api/http-repl
+      - name: Telemetry
+        uid: web-api/http-repl/telemetry
 - name: Real-time apps
   displayName: signalr
   items:
@@ -682,6 +712,9 @@
     - name: Logging and diagnostics
       displayName: signalr
       uid: signalr/diagnostics
+    - name: Troubleshooting
+      displayName: signalr
+      uid: signalr/troubleshoot
     - name: Specifications
       displayName: signalr, specs
       items:
@@ -698,13 +731,25 @@
         - name: Get started with a gRPC service
           uid: tutorials/grpc/grpc-start
     - name: gRPC services with C#
-      uid: grpc/basics
+      items:
+        - name: Overview
+          uid: grpc/basics
+        - name: Create gRPC services
+          uid: grpc/services
+        - name: Create Protobuf messages
+          uid: grpc/protobuf
+        - name: Versioning gRPC services
+          uid: grpc/versioning
+    - name: Call gRPC services with C#
+      items:
+        - name: Overview
+          uid: grpc/client
+        - name: gRPC client factory integration
+          uid: grpc/clientfactory
+        - name: Deadlines and cancellation
+          uid: grpc/deadlines-cancellation
     - name: gRPC services with ASP.NET Core
       uid: grpc/aspnetcore
-    - name: Call gRPC services with .NET client
-      uid: grpc/client
-    - name: gRPC client factory integration
-      uid: grpc/clientfactory
     - name: Use gRPC in browser apps
       uid: grpc/browser
     - name: Configuration
@@ -715,12 +760,20 @@
       uid: grpc/diagnostics
     - name: Security considerations
       uid: grpc/security
-    - name: Versioning gRPC services
-      uid: grpc/versioning
+    - name: Performance best practices
+      uid: grpc/performance
+    - name: Inter-process communication
+      uid: grpc/interprocess
+    - name: Create JSON Web APIs from gRPC
+      uid: grpc/httpapi
     - name: Manage Protobuf references with dotnet-grpc
       uid: grpc/dotnet-grpc
+    - name: Test gRPC services with gRPCurl
+      uid: grpc/test-tools
     - name: Migrate gRPC services from C-core
       uid: grpc/migration
+    - name: Why migrate WCF to ASP.NET Core gRPC
+      uid: grpc/wcf
     - name: Compare gRPC services with HTTP APIs
       uid: grpc/comparison
     - name: Samples
@@ -831,7 +884,7 @@
           href: /visualstudio/mac/publish-app-svc?toc=/aspnet/core/toc.json&bc=/aspnet/core/breadcrumb/toc.json
         - name: Publish with the CLI
           displayName: azure, deploy, publish
-          href: /azure/app-service/app-service-web-tutorial-dotnetcore-sqldb?toc=/aspnet/core/toc.json&bc=/aspnet/core/breadcrumb/toc.json
+          href: /azure/app-service/tutorial-dotnetcore-sqldb-app?toc=/aspnet/core/toc.json&bc=/aspnet/core/breadcrumb/toc.json
         - name: Publish with Visual Studio and Git
           displayName: azure, deploy, publish
           uid: host-and-deploy/azure-apps/azure-continuous-deployment
@@ -878,21 +931,42 @@
         - name: ASP.NET Core Module
           displayName: deploy, publish
           uid: host-and-deploy/aspnet-core-module
+        - name: In-process hosting
+          displayName: deploy, publish
+          uid: host-and-deploy/iis/in-process-hosting
+        - name: Out-of-process hosting
+          displayName: deploy, publish
+          uid: host-and-deploy/iis/out-of-process-hosting
+        - name: Hosting Bundle
+          displayName: deploy, publish
+          uid: host-and-deploy/iis/hosting-bundle
+        - name: web.config file
+          displayName: deploy, publish
+          uid: host-and-deploy/iis/web-config
         - name: IIS support in Visual Studio
           displayName: deploy, publish
           uid: host-and-deploy/iis/development-time-iis-support
         - name: IIS Modules
           displayName: deploy, publish
           uid: host-and-deploy/iis/modules
+        - name: Logging and diagnostics
+          displayName: deploy, publish
+          uid: host-and-deploy/iis/logging-and-diagnostics
         - name: Troubleshoot
           displayName: deploy, publish
           uid: test/troubleshoot-azure-iis
         - name: Errors reference
           displayName: deploy, publish
           uid: host-and-deploy/azure-iis-errors-reference
+        - name: Advanced
+          displayName: deploy, publish
+          uid: host-and-deploy/iis/advanced
         - name: Transform web.config
           displayName: deploy, publish
           uid: host-and-deploy/iis/transform-webconfig
+        - name: HTTP/2
+          displayName: deploy, publish
+          uid: host-and-deploy/iis/protocols
     - name: Kestrel
       uid: fundamentals/servers/kestrel
       displayName: deploy, publish, server
@@ -1057,6 +1131,8 @@
           uid: security/authorization/policies
         - name: Authorization policy providers
           uid: security/authorization/iauthorizationpolicyprovider
+        - name: Customize the behavior of AuthorizationMiddleware
+          uid: security/authorization/authorizationmiddlewareresulthandler
         - name: Dependency injection in requirement handlers
           uid: security/authorization/dependencyinjection
         - name: Resource-based authorization
@@ -1152,11 +1228,11 @@
       uid: security/docker-compose-https
     - name: EU General Data Protection Regulation (GDPR) support
       uid: security/gdpr
-    - name: Anti-request forgery
+    - name: Prevent Cross-Site Request Forgery (XSRF/CSRF) attacks
       uid: security/anti-request-forgery
     - name: Prevent open redirect attacks
       uid: security/preventing-open-redirects
-    - name: Prevent Cross-Site Scripting
+    - name: Prevent Cross-Site Scripting (XSS)
       uid: security/cross-site-scripting
     - name: Enable Cross-Origin Requests (CORS)
       uid: security/cors
@@ -1225,6 +1301,8 @@
       uid: mvc/compatibility-version
     - name: Write middleware
       uid: fundamentals/middleware/write
+    - name: Basic JSON APIs with Route-to-code
+      uid: web-api/route-to-code
     - name: Request and response operations
       displayName: middleware
       uid: fundamentals/middleware/request-response

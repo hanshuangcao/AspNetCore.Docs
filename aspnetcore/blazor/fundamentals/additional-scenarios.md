@@ -5,8 +5,8 @@ description: Learn about additional scenarios for ASP.NET Core Blazor hosting mo
 monikerRange: '>= aspnetcore-3.1'
 ms.author: riande
 ms.custom: mvc
-ms.date: 08/12/2020
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+ms.date: 10/27/2020
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: blazor/fundamentals/additional-scenarios
 ---
 # ASP.NET Core Blazor hosting model configuration
@@ -85,47 +85,78 @@ The following table describes the CSS classes applied to the `components-reconne
 
 ## Render mode
 
+::: moniker range=">= aspnetcore-5.0"
+
+*This section applies to hosted Blazor WebAssembly and Blazor Server.*
+
+Blazor apps are set up by default to prerender the UI on the server. For more information, see <xref:mvc/views/tag-helpers/builtin-th/component-tag-helper>.
+
+::: moniker-end
+
+::: moniker range="< aspnetcore-5.0"
+
 *This section applies to Blazor Server.*
 
-Blazor Server apps are set up by default to prerender the UI on the server before the client connection to the server is established. This is set up in the `_Host.cshtml` Razor page:
+Blazor Server apps are set up by default to prerender the UI on the server before the client connection to the server is established. For more information, see <xref:mvc/views/tag-helpers/builtin-th/component-tag-helper>.
+
+::: moniker-end
+
+## Initialize the Blazor circuit
+
+*This section applies to Blazor Server.*
+
+Configure the manual start of a Blazor Server app's [SignalR circuit](xref:blazor/hosting-models#circuits) in the `Pages/_Host.cshtml` file:
+
+* Add an `autostart="false"` attribute to the `<script>` tag for the `blazor.server.js` script.
+* Place a script that calls `Blazor.start` after the `blazor.server.js` script's tag and inside the closing `</body>` tag.
+
+When `autostart` is disabled, any aspect of the app that doesn't depend on the circuit works normally. For example, client-side routing is operational. However, any aspect that depends on the circuit isn't operational until `Blazor.start` is called. App behavior is unpredictable without an established circuit. For example, component methods fail to execute while the circuit is disconnected.
+
+### Initialize Blazor when the document is ready
+
+To initialize the Blazor app when the document is ready:
 
 ```cshtml
 <body>
-    <app>
-      <component type="typeof(App)" render-mode="ServerPrerendered" />
-    </app>
 
-    <script src="_framework/blazor.server.js"></script>
+    ...
+
+    <script autostart="false" src="_framework/blazor.server.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        Blazor.start();
+      });
+    </script>
 </body>
 ```
 
-<xref:Microsoft.AspNetCore.Mvc.TagHelpers.ComponentTagHelper.RenderMode> configures whether the component:
+### Chain to the `Promise` that results from a manual start
 
-* Is prerendered into the page.
-* Is rendered as static HTML on the page or if it includes the necessary information to bootstrap a Blazor app from the user agent.
-
-| Render mode | Description |
-| --- | --- |
-| <xref:Microsoft.AspNetCore.Mvc.Rendering.RenderMode.ServerPrerendered> | Renders the component into static HTML and includes a marker for a Blazor Server app. When the user-agent starts, this marker is used to bootstrap a Blazor app. |
-| <xref:Microsoft.AspNetCore.Mvc.Rendering.RenderMode.Server> | Renders a marker for a Blazor Server app. Output from the component isn't included. When the user-agent starts, this marker is used to bootstrap a Blazor app. |
-| <xref:Microsoft.AspNetCore.Mvc.Rendering.RenderMode.Static> | Renders the component into static HTML. |
-
-Rendering server components from a static HTML page isn't supported.
-
-## Configure the SignalR client for Blazor Server apps
-
-*This section applies to Blazor Server.*
-
-Configure the SignalR client used by Blazor Server apps in the `Pages/_Host.cshtml` file. Place a script that calls `Blazor.start` after the `_framework/blazor.server.js` script and inside the `</body>` tag.
-
-### Logging
-
-To configure SignalR client logging:
-
-* Add an `autostart="false"` attribute to the `<script>` tag for the `blazor.server.js` script.
-* Pass in a configuration object (`configureSignalR`) that calls `configureLogging` with the log level on the client builder.
+To perform additional tasks, such as JS interop initialization, use `then` to chain to the `Promise` that results from a manual Blazor app start:
 
 ```cshtml
+<body>
+
+    ...
+
+    <script autostart="false" src="_framework/blazor.server.js"></script>
+    <script>
+      Blazor.start().then(function () {
+        ...
+      });
+    </script>
+</body>
+```
+
+### Configure the SignalR client
+
+#### Logging
+
+To configure SignalR client logging, pass in a configuration object (`configureSignalR`) that calls `configureLogging` with the log level on the client builder:
+
+```cshtml
+<body>
+
     ...
 
     <script autostart="false" src="_framework/blazor.server.js"></script>
@@ -148,20 +179,24 @@ The reconnection handler's circuit connection events can be modified for custom 
 * To notify the user if the connection is dropped.
 * To perform logging (from the client) when a circuit is connected.
 
-To modify the connection events:
+To modify the connection events, register callbacks for the following connection changes:
 
-* Add an `autostart="false"` attribute to the `<script>` tag for the `blazor.server.js` script.
-* Register callbacks for connection changes for dropped connections (`onConnectionDown`) and established/re-established connections (`onConnectionUp`). **Both** `onConnectionDown` and `onConnectionUp` must be specified.
+* Dropped connections use `onConnectionDown`.
+* Established/re-established connections use `onConnectionUp`.
+
+**Both** `onConnectionDown` and `onConnectionUp` must be specified:
 
 ```cshtml
+<body>
+
     ...
 
     <script autostart="false" src="_framework/blazor.server.js"></script>
     <script>
       Blazor.start({
         reconnectionHandler: {
-          onConnectionDown: (options, error) => console.error(error);
-          onConnectionUp: () => console.log("Up, up, and away!");
+          onConnectionDown: (options, error) => console.error(error),
+          onConnectionUp: () => console.log("Up, up, and away!")
         }
       });
     </script>
@@ -170,12 +205,11 @@ To modify the connection events:
 
 ### Adjust the reconnection retry count and interval
 
-To adjust the reconnection retry count and interval:
-
-* Add an `autostart="false"` attribute to the `<script>` tag for the `blazor.server.js` script.
-* Set the number of retries (`maxRetries`) and period in milliseconds permitted for each retry attempt (`retryIntervalMilliseconds`).
+To adjust the reconnection retry count and interval, set the number of retries (`maxRetries`) and period in milliseconds permitted for each retry attempt (`retryIntervalMilliseconds`):
 
 ```cshtml
+<body>
+
     ...
 
     <script autostart="false" src="_framework/blazor.server.js"></script>
@@ -190,14 +224,13 @@ To adjust the reconnection retry count and interval:
 </body>
 ```
 
-### Hide or replace the reconnection display
+## Hide or replace the reconnection display
 
-To hide the reconnection display:
-
-* Add an `autostart="false"` attribute to the `<script>` tag for the `blazor.server.js` script.
-* Set the reconnection handler's `_reconnectionDisplay` to an empty object (`{}` or `new Object()`).
+To hide the reconnection display, set the reconnection handler's `_reconnectionDisplay` to an empty object (`{}` or `new Object()`):
 
 ```cshtml
+<body>
+
     ...
 
     <script autostart="false" src="_framework/blazor.server.js"></script>
@@ -205,6 +238,8 @@ To hide the reconnection display:
       window.addEventListener('beforeunload', function () {
         Blazor.defaultReconnectionHandler._reconnectionDisplay = {};
       });
+
+      Blazor.start();
     </script>
 </body>
 ```
@@ -217,6 +252,28 @@ Blazor.defaultReconnectionHandler._reconnectionDisplay =
 ```
 
 The placeholder `{ELEMENT ID}` is the ID of the HTML element to display.
+
+::: moniker range=">= aspnetcore-5.0"
+
+Customize the delay before the reconnection display appears by setting the `transition-delay` property in the app's CSS (`wwwroot/css/site.css`) for the modal element. The following example sets the transition delay from 500 ms (default) to 1,000 ms (1 second):
+
+```css
+#components-reconnect-modal {
+    transition: visibility 0s linear 1000ms;
+}
+```
+
+## Disconnect the Blazor circuit from the client
+
+By default, a Blazor circuit is disconnected when the [`unload` page event](https://developer.mozilla.org/docs/Web/API/Window/unload_event) is triggered. To disconnect the circuit for other scenarios on the client, invoke `Blazor.disconnect` in the appropriate event handler. In the following example, the circuit is disconnected when the page is hidden ([`pagehide` event](https://developer.mozilla.org/docs/Web/API/Window/pagehide_event)):
+
+```javascript
+window.addEventListener('pagehide', () => {
+  Blazor.disconnect();
+});
+```
+
+<!-- HOLD for reactivation at 5x
 
 ## Influence HTML `<head>` tag elements
 
@@ -248,6 +305,10 @@ When one of the framework components is used in a child component, the rendered 
 
 * Can be modified by application state. A hard-coded HTML tag can't be modified by application state.
 * Is removed from the HTML `<head>` when the parent component is no longer rendered.
+
+-->
+
+::: moniker-end
 
 ## Static files
 
@@ -289,6 +350,15 @@ To create additional file mappings with a <xref:Microsoft.AspNetCore.StaticFiles
   app.UseStaticFiles();
   ```
 
+* You can avoid interfering with serving `_framework/blazor.server.js` by using <xref:Microsoft.AspNetCore.Builder.MapWhenExtensions.MapWhen%2A> to execute a custom Static File Middleware:
+
+  ```csharp
+  app.MapWhen(ctx => !ctx.Request.Path
+      .StartsWithSegments("_framework/blazor.server.js", 
+          subApp => subApp.UseStaticFiles(new StaticFileOptions(){ ... })));
+  ```
+
 ## Additional resources
 
 * <xref:fundamentals/logging/index>
+* [Blazor Server reconnection events and component lifecycle events](xref:blazor/components/lifecycle#blazor-server-reconnection-events)

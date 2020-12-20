@@ -4,7 +4,7 @@ author: rick-anderson
 description: Learn how to build an ASP.NET Core app with email confirmation and password reset.
 ms.author: riande
 ms.date: 03/11/2019
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: security/authentication/accconfirm
 ---
 
@@ -145,7 +145,13 @@ Run the web app, and test the account confirmation and password recovery flow.
 * Enter the email you used to register the account.
 * An email with a link to reset your password is sent. Check your email and click the link to reset your password. After your password has been successfully reset, you can sign in with your email and new password.
 
-## Change email and activity timeout
+<a name="resend"></a>
+
+## Resend email confirmation
+
+In ASP.NET Core 5.0 and later, select the **Resend email confirmation** link on the **Login** page.
+
+### Change email and activity timeout
 
 The default inactivity timeout is 14 days. The following code sets the inactivity timeout to 5 days:
 
@@ -170,10 +176,6 @@ Add a custom [DataProtectorTokenProvider\<TUser>](/dotnet/api/microsoft.aspnetco
 Add the custom provider to the service container:
 
 [!code-csharp[](accconfirm/sample/WebPWrecover30/StartupEmail.cs?name=snippet1&highlight=10-16)]
-
-### Resend email confirmation
-
-See [this GitHub issue](https://github.com/dotnet/AspNetCore/issues/5410).
 
 <a name="debug"></a>
 

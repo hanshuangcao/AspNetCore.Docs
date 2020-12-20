@@ -5,7 +5,7 @@ description: Learn how to cache data in memory in ASP.NET Core.
 ms.author: riande
 ms.custom: mvc
 ms.date: 02/02/2020
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: performance/caching/memory
 ---
 # Cache in-memory in ASP.NET Core
@@ -66,6 +66,9 @@ The following code uses [TryGetValue](/dotnet/api/microsoft.extensions.caching.m
 The current time and the cached time are displayed:
 
 [!code-cshtml[](memory/3.0sample/WebCacheSample/Views/Home/Cache.cshtml)]
+
+The following code uses the [Set](/dotnet/api/microsoft.extensions.caching.memory.cacheextensions.set#Microsoft_Extensions_Caching_Memory_CacheExtensions_Set__1_Microsoft_Extensions_Caching_Memory_IMemoryCache_System_Object___0_System_TimeSpan_) extension method to cache data for a relative time without creating the `MemoryCacheEntryOptions` object.
+[!code-csharp[](memory/3.0sample/WebCacheSample/Controllers/HomeController.cs?name=snippet_set)]
 
 The cached `DateTime` value remains in the cache while there are requests within the timeout period.
 

@@ -6,7 +6,7 @@ monikerRange: '>= aspnetcore-3.1'
 ms.author: riande
 ms.custom: mvc
 ms.date: 06/10/2020
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: blazor/progressive-web-app
 ---
 # Build Progressive Web Applications with ASP.NET Core Blazor WebAssembly
@@ -56,7 +56,7 @@ Optionally, PWA can be configured for an app created from the ASP.NET Core Hoste
 
 When visiting an app created using the PWA template, users have the option of installing the app into their OS's start menu, dock, or home screen. The way this option is presented depends on the user's browser. When using desktop Chromium-based browsers, such as Edge or Chrome, an **Add** button appears within the URL bar. After the user selects the **Add** button, they receive a confirmation dialog:
 
-![The confirmation diaglog in Google Chrome presents an Install button button to the user for the 'MyBlazorPwa' app.](progressive-web-app/_static/image2.png)
+![The confirmation dialog in Google Chrome presents an Install button to the user for the 'MyBlazorPwa' app.](progressive-web-app/_static/image2.png)
 
 On iOS, visitors can install the PWA using Safari's **Share** button and its **Add to Homescreen** option. On Chrome for Android, users should select the **Menu** button in the upper-right corner, followed by **Add to Home screen**.
 
@@ -276,7 +276,7 @@ To create an offline PWA app that interacts with authentication:
 * Queue operations while the app is offline and apply them when the app returns online.
 * During sign out, clear the stored user.
 
-The [`CarChecker`](https://github.com/SteveSandersonMS/CarChecker) sample app demonstrates the the preceding approaches. See the following parts of the app:
+The [`CarChecker`](https://github.com/SteveSandersonMS/CarChecker) sample app demonstrates the preceding approaches. See the following parts of the app:
 
 * `OfflineAccountClaimsPrincipalFactory` (`Client/Data/OfflineAccountClaimsPrincipalFactory.cs`)
 * `LocalVehiclesStore` (`Client/Data/LocalVehiclesStore.cs`)
@@ -284,4 +284,5 @@ The [`CarChecker`](https://github.com/SteveSandersonMS/CarChecker) sample app de
 
 ## Additional resources
 
+* [Troubleshoot integrity PowerShell script](xref:blazor/host-and-deploy/webassembly#troubleshoot-integrity-powershell-script)
 * [SignalR cross-origin negotiation for authentication](xref:blazor/fundamentals/additional-scenarios#signalr-cross-origin-negotiation-for-authentication)

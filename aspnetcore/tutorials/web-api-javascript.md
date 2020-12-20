@@ -3,9 +3,9 @@ title: "Tutorial: Call an ASP.NET Core web API with JavaScript"
 author: rick-anderson
 description: Learn how to call an ASP.NET Core web API with JavaScript.
 ms.author: riande
-ms.custom: mvc
+ms.custom: mvc, devx-track-js
 ms.date: 11/26/2019
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: tutorials/web-api-javascript
 ---
 # Tutorial: Call an ASP.NET Core web API with JavaScript
@@ -46,6 +46,10 @@ The simplest `fetch` call accepts a single parameter representing the route. A s
 1. Add an HTML file named *index.html* to the *wwwroot* folder. Replace the contents of *index.html* with the following markup:
 
     [!code-html[](first-web-api/samples/3.0/TodoApi/wwwroot/index.html)]
+
+1. Add a CSS file named *site.css* to the *wwwroot/css* folder. Replace the contents of *site.css* with the following styles:
+
+    [!code-css[](first-web-api/samples/3.0/TodoApi/wwwroot/css/site.css)]
 
 1. Add a JavaScript file named *site.js* to the *wwwroot/js* folder. Replace the contents of *site.js* with the following code:
 

@@ -4,9 +4,9 @@ author: bradygaster
 description: Learn how to stream data between the client and the server.
 monikerRange: '>= aspnetcore-2.1'
 ms.author: bradyg
-ms.custom: mvc
-ms.date: 11/12/2019
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+ms.custom: mvc, devx-track-js
+ms.date: 10/29/2020
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: signalr/streaming
 ---
 # Use streaming in ASP.NET Core SignalR
@@ -58,7 +58,7 @@ The following sample shows the basics of streaming data to the client using Chan
 > [!NOTE]
 > Write to the `ChannelWriter<T>` on a background thread and return the `ChannelReader` as soon as possible. Other hub invocations are blocked until a `ChannelReader` is returned.
 >
-> Wrap logic in a `try ... catch`. Complete the `Channel` in the `catch` and outside the `catch` to make sure the hub method invocation is completed properly.
+> Wrap logic in a [`try ... catch` statement](/dotnet/csharp/language-reference/keywords/try-catch). Complete the `Channel` in a [`finally` block](/dotnet/csharp/language-reference/keywords/try-catch-finally). If you want to flow an error, capture it inside the `catch` block and write it in the `finally` block.
 
 ::: moniker range=">= aspnetcore-3.0"
 
@@ -303,6 +303,22 @@ hubConnection.stream(String.class, "ExampleStreamingHubMethod", "Arg1")
 ```
 
 The `stream` method on `HubConnection` returns an Observable of the stream item type. The Observable type's `subscribe` method is where `onNext`, `onError` and `onCompleted` handlers are defined.
+
+### Client-to-server streaming
+
+The SignalR Java client can call client-to-server streaming methods on hubs by passing in an [Observable](https://rxjs-dev.firebaseapp.com/api/index/class/Observable) as an argument to `send`, `invoke`, or `stream`, depending on the hub method invoked.
+
+```java
+ReplaySubject<String> stream = ReplaySubject.create();
+hubConnection.send("UploadStream", stream);
+stream.onNext("FirstItem");
+stream.onNext("SecondItem");
+stream.onComplete();
+```
+
+Calling `stream.onNext(item)` with an item writes the item to the stream, and the hub method receives the item on the server.
+
+To end the stream, call `stream.onComplete()`.
 
 ::: moniker-end
 

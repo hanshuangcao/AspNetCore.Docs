@@ -5,7 +5,7 @@ description: Learn how to version gRPC services.
 monikerRange: '>= aspnetcore-3.0'
 ms.author: jamesnk
 ms.date: 01/09/2020
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: grpc/versioning
 ---
 # Versioning gRPC services
@@ -101,3 +101,7 @@ Publishing multiple versions of a service duplicates it. To reduce duplication, 
 [!code-csharp[](versioning/sample/GreeterServiceV1.cs?highlight=10,19)]
 
 Services and messages generated with different package names are **different .NET types**. Moving business logic to a centralized location requires mapping messages to common types.
+
+## Additional resources
+
+* <xref:grpc/protobuf>

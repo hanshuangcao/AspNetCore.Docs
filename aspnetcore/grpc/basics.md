@@ -5,7 +5,7 @@ description: Learn the basic concepts when writing gRPC services with C#.
 monikerRange: '>= aspnetcore-3.0'
 ms.author: johluo
 ms.date: 07/09/2020
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: grpc/basics
 ---
 # gRPC services with C\#
@@ -16,12 +16,12 @@ This document outlines the concepts needed to write [gRPC](https://grpc.io/docs/
 
 ## proto file
 
-gRPC uses a contract-first approach to API development. Protocol buffers (protobuf) are used as the Interface Design Language (IDL) by default. The *\*.proto* file contains:
+gRPC uses a contract-first approach to API development. Protocol buffers (protobuf) are used as the Interface Definition Language (IDL) by default. The *\*.proto* file contains:
 
 * The definition of the gRPC service.
 * The messages sent between clients and servers.
 
-For more information on the syntax of protobuf files, see the [official documentation (protobuf)](https://developers.google.com/protocol-buffers/docs/proto3).
+For more information on the syntax of protobuf files, see <xref:grpc/protobuf>.
 
 For example, consider the *greet.proto* file used in [Get started with gRPC service](xref:tutorials/grpc/grpc-start):
 

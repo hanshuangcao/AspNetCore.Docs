@@ -5,8 +5,8 @@ description: Learn how to secure Blazor WebAssemlby apps as Single Page Applicat
 monikerRange: '>= aspnetcore-3.1'
 ms.author: riande
 ms.custom: mvc
-ms.date: 07/16/2020
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+ms.date: 10/27/2020
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: blazor/security/webassembly/index
 ---
 # Secure ASP.NET Core Blazor WebAssembly
@@ -83,6 +83,13 @@ Refresh tokens can't be secured client-side in Blazor WebAssembly apps. Therefor
 
 Refresh tokens can be maintained and used by the server-side app in a Hosted Blazor WebAssembly solution to access third-party APIs. For more information, see <xref:blazor/security/webassembly/additional-scenarios#authenticate-users-with-a-third-party-provider-and-call-protected-apis-on-the-host-server-and-the-third-party>.
 
+## Establish claims for users
+
+Apps often require claims for users based on a web API call to a server. For example, claims are frequently used to [establish authorization](xref:blazor/security/index#authorization) in an app. In these scenarios, the app requests an access token to access the service and uses the token to obtain the user data for the claims. For examples, see the following resources:
+
+* [Additional scenarios: Customize the user](xref:blazor/security/webassembly/additional-scenarios#customize-the-user)
+* <xref:blazor/security/webassembly/aad-groups-roles>
+
 ## Implementation guidance
 
 Articles under this *Overview* provide information on authenticating users in Blazor WebAssembly apps against specific providers.
@@ -100,4 +107,17 @@ Hosted Blazor WebAssembly apps:
 * [Azure Active Directory (AAD) B2C](xref:blazor/security/webassembly/hosted-with-azure-active-directory-b2c)
 * [Identity Server](xref:blazor/security/webassembly/hosted-with-identity-server)
 
-For further guidance on configuration, see <xref:blazor/security/webassembly/additional-scenarios>.
+::: moniker range=">= aspnetcore-5.0"
+
+Further configuration guidance is found in the following articles:
+
+* <xref:blazor/security/webassembly/additional-scenarios>
+* <xref:blazor/security/webassembly/graph-api>
+
+::: moniker-end
+
+::: moniker range="< aspnetcore-5.0"
+
+For further configuration guidance, see <xref:blazor/security/webassembly/additional-scenarios>.
+
+::: moniker-end

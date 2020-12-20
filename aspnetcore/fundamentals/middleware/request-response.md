@@ -6,7 +6,7 @@ monikerRange: '>= aspnetcore-3.0'
 ms.author: jukotali
 ms.custom: mvc
 ms.date: 5/29/2019
-no-loc: [cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+no-loc: [appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: fundamentals/middleware/request-response
 ---
 # Request and response operations in ASP.NET Core
@@ -27,6 +27,8 @@ There are two abstractions for the request and response bodies: <xref:System.IO.
 Streams aren't being removed from the framework. Streams continue to be used throughout .NET, and many stream types don't have pipe equivalents, such as `FileStreams` and `ResponseCompression`.
 
 ## Stream examples
+
+<!-- see "fundamentals\middleware\request-response\static\TestPipes.JPG for testing sample -->
 
 Suppose the goal is to create a middleware that reads the entire request body as a list of strings, splitting on new lines. A simple stream implementation might look like the following example:
 
